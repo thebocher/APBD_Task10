@@ -1,5 +1,6 @@
 using APBD_Task10.App.DTOs;
 using APBD_Task10.Infrastructure;
+using APBD_Task10.Infrastructure.DAL;
 using Microsoft.EntityFrameworkCore;
 
 namespace APBD_Task10.App.Services;

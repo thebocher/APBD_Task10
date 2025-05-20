@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using APBD_Task10.App.DTOs;
 using APBD_Task10.Infrastructure;
+using APBD_Task10.Infrastructure.DAL;
 using Microsoft.EntityFrameworkCore;
 
 namespace APBD_Task10.App.Services;

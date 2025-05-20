@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace APBD_Task10.Infrastructure;
+namespace APBD_Task10.Infrastructure.DAL;
 
 public partial class MasterContext : DbContext
 {
