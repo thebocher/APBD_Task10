@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APBD_Task10.Infrastructure", "src\APBD_Task10.Infrastructure\APBD_Task10.Infrastructure.csproj", "{E8BDA432-163A-4FBB-9EE5-E1EAAC8131AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APBD_Task10.API", "src\APBD_Task10.API\APBD_Task10.API.csproj", "{B8AA10FB-7C17-48AB-9CB1-2C7D0DB6CD01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APBD_Task10.App", "src\APBD_Task10.App\APBD_Task10.App.csproj", "{BC50AC6D-F4F9-421F-8564-BFEB0C9BB94C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8BDA432-163A-4FBB-9EE5-E1EAAC8131AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8BDA432-163A-4FBB-9EE5-E1EAAC8131AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8BDA432-163A-4FBB-9EE5-E1EAAC8131AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8BDA432-163A-4FBB-9EE5-E1EAAC8131AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AA10FB-7C17-48AB-9CB1-2C7D0DB6CD01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AA10FB-7C17-48AB-9CB1-2C7D0DB6CD01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AA10FB-7C17-48AB-9CB1-2C7D0DB6CD01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AA10FB-7C17-48AB-9CB1-2C7D0DB6CD01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC50AC6D-F4F9-421F-8564-BFEB0C9BB94C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC50AC6D-F4F9-421F-8564-BFEB0C9BB94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC50AC6D-F4F9-421F-8564-BFEB0C9BB94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC50AC6D-F4F9-421F-8564-BFEB0C9BB94C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
