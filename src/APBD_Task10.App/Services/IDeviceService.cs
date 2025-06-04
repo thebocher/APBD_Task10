@@ -7,6 +7,6 @@ public interface IDeviceService
     public List<GetDeviceListItemDto> GetDevices();
     public GetDeviceDto? GetDevice(int id);
     public void CreateDevice(CreateDeviceDto createDeviceDto);
-    public void UpdateDevice(CreateDeviceDto createDeviceDto);
+    public void UpdateDevice(int id, CreateDeviceDto createDeviceDto);
     public void DeleteDevice(int id);
 }

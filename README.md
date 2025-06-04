@@ -9,9 +9,16 @@ src/APBD_Task10.API/appsettings.json template
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DatabaseConnection": "--your connection string--"
+    "DatabaseConnection": "--your-connection-string--"
+  },
+  "Jwt": {
+    "Issuer": "http://localhost:5300",
+    "Audience": "http://localhost:5300",
+    "Key": "--your-key--",
+    "ValidInMinutes": 10
   }
 }
+
 ```
 
 # Reason of splitting code

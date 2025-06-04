@@ -5,3 +5,4 @@ riderModule.iml
 /_ReSharper.Caches/
 .idea/
 **/appsettings.*
+src/APBD_Task10.API/Migrations/

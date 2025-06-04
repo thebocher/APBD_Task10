@@ -77,10 +77,10 @@ public class DeviceService(MasterContext context) : IDeviceService
         _context.SaveChanges();
     }
 
-    public void UpdateDevice(CreateDeviceDto createDeviceDto)
+    public void UpdateDevice(int id, CreateDeviceDto createDeviceDto)
     {
         var oldDevice = _context.Devices
-            .FirstOrDefault(d => d.Name == createDeviceDto.Name);
+            .FirstOrDefault(d => d.Id == id);
         if (oldDevice == null)
             throw new Exception($"Device {createDeviceDto.Name} not found");
             

@@ -1,4 +1,6 @@
 using System.Text;
+using APBD_Task10.App;
+using APBD_Task10.App.Helpers.Options;
 using APBD_Task10.App.Services;
 using APBD_Task10.Infrastructure;
 using APBD_Task10.Infrastructure.DAL;
@@ -12,7 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MasterContext>(options =>
         options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DatabaseConnection")));
+            builder.Configuration.GetConnectionString("DatabaseConnection"),
+            b => b.MigrationsAssembly("APBD_Task10.API"))
+        );
+
+var jwtConfigData = builder.Configuration.GetSection("Jwt");
+
+builder.Services.Configure<JwtOptions>(jwtConfigData);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -22,13 +30,14 @@ builder.Services.AddAuthentication(options =>
 {
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
+        ValidateIssuerSigningKey = true,
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.FromMinutes(2),
-        ValidIssuer = "https://localhost:5001",
-        ValidAudience = "https://localhost:5001",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["secretKey"]))
+        ValidIssuer = jwtConfigData["Issuer"],
+        ValidAudience = jwtConfigData["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigData["Key"]))
     };
 
     opt.Events = new JwtBearerEvents
@@ -51,13 +60,14 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = false,
         ClockSkew = TimeSpan.FromMinutes(2),
-        ValidIssuer = "https://localhost:5001",
-        ValidAudience = "https://localhost:5001",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["secretKey"]))
+        ValidIssuer = jwtConfigData["Issuer"],
+        ValidAudience = jwtConfigData["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigData["Key"]))
     };
 });
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -75,6 +85,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

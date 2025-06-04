@@ -1,4 +1,5 @@
 using APBD_Task10.App.DTOs;
+using APBD_Task10.App.DTOs.Employee;
 using APBD_Task10.Infrastructure;
 using APBD_Task10.Infrastructure.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -29,13 +30,21 @@ public class EmployeeService(MasterContext context) : IEmployeeService
             .Where(e => e.Id == id)
             .Select(e => new GetEmployeeDto
             {
-                Person = e.Person,
+                Person = new GetEmployeePersonDto()
+                {   
+                    Id = e.Person.Id,
+                    PassportNumber = e.Person.PassportNumber,
+                    FirstName = e.Person.FirstName,
+                    MiddleName = e.Person.MiddleName,
+                    LastName = e.Person.LastName,
+                    PhoneNumber = e.Person.PhoneNumber,
+                    Email = e.Person.Email,
+                },
                 Salary = e.Salary,
                 Position = new PositionDto
                 {
                     Id = e.PositionId,
                     Name = e.Position.Name,
-
                 },
                 HireDate = e.HireDate,
             })

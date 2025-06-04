@@ -24,6 +24,11 @@ public partial class MasterContext : DbContext
     public virtual DbSet<Person> People { get; set; }
 
     public virtual DbSet<Position> Positions { get; set; }
+    
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<Account> Accounts { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
