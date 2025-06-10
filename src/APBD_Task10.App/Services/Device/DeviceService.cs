@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using APBD_Task10.App.DTOs;
+using APBD_Task10.App.DTOs.Device;
 using APBD_Task10.Infrastructure;
 using APBD_Task10.Infrastructure.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ public class DeviceService(MasterContext context) : IDeviceService
 
     public List<GetDeviceListItemDto> GetDevices()
     {
-        return _context.Devices.Select(d => new GetDeviceListItemDto
+        return _context.Device.Select(d => new GetDeviceListItemDto
         {
             Id = d.Id,
             Name = d.Name
@@ -22,7 +23,7 @@ public class DeviceService(MasterContext context) : IDeviceService
     
     public GetDeviceDto? GetDevice(int id)
     {
-        var device = _context.Devices
+        var device = _context.Device
             .Include(d => d.DeviceType)
             .Include(d => d.DeviceEmployees)
             .ThenInclude(de => de.Employee)
@@ -50,51 +51,50 @@ public class DeviceService(MasterContext context) : IDeviceService
         var result = new GetDeviceDto
         {
             Name = device.Name,
-            DeviceTypeName = device.DeviceTypeName,
+            Type = device.DeviceTypeName,
             IsEnabled = device.IsEnabled,
             AdditionalProperties = JsonSerializer.Deserialize<object>(device.AdditionalProperties),
-            CurrentEmployee = device.CurrentEmployee
         };
         return result;
     }
 
     public void CreateDevice(CreateDeviceDto createDeviceDto)
     {
-        var deviceType = _context.DeviceTypes
-            .FirstOrDefault(dt => dt.Name == createDeviceDto.DeviceTypeName);
+        var deviceType = _context.DeviceType
+            .FirstOrDefault(dt => dt.Id == createDeviceDto.TypeId);
         
         if (deviceType == null)
-            throw new Exception($"Device type {createDeviceDto.DeviceTypeName} not found");
+            throw new Exception($"Device type id {createDeviceDto.TypeId} not found");
 
         var device = new Device
         {
             Name = createDeviceDto.Name,
             DeviceType = deviceType,
             IsEnabled = createDeviceDto.IsEnabled,
-            AdditionalProperties = createDeviceDto.AdditionalProperties,
+            AdditionalProperties = JsonSerializer.Serialize(createDeviceDto.AdditionalProperties),
         };
-        _context.Devices.Add(device);
+        _context.Device.Add(device);
         _context.SaveChanges();
     }
 
     public void UpdateDevice(int id, CreateDeviceDto createDeviceDto)
     {
-        var oldDevice = _context.Devices
+        var oldDevice = _context.Device
             .FirstOrDefault(d => d.Id == id);
         if (oldDevice == null)
             throw new Exception($"Device {createDeviceDto.Name} not found");
             
-        var deviceType = _context.DeviceTypes
-            .FirstOrDefault(dt => dt.Name == createDeviceDto.DeviceTypeName);
+        var deviceType = _context.DeviceType
+            .FirstOrDefault(dt => dt.Id == createDeviceDto.TypeId);
         
         if (deviceType == null)
-            throw new Exception($"Device type {createDeviceDto.DeviceTypeName} not found");
+            throw new Exception($"Device type id {createDeviceDto.TypeId} not found");
 
         oldDevice.Name = createDeviceDto.Name;
         oldDevice.DeviceType = deviceType;
         oldDevice.IsEnabled = createDeviceDto.IsEnabled;
-        oldDevice.AdditionalProperties = createDeviceDto.AdditionalProperties;
-        _context.Devices.Update(oldDevice);
+        oldDevice.AdditionalProperties = JsonSerializer.Serialize(createDeviceDto.AdditionalProperties);
+        _context.Device.Update(oldDevice);
         _context.SaveChanges();
     }
 
@@ -104,8 +104,8 @@ public class DeviceService(MasterContext context) : IDeviceService
         {
             Id = id
         };
-        _context.Devices.Attach(device);
-        _context.Devices.Remove(device);
+        _context.Device.Attach(device);
+        _context.Device.Remove(device);
         _context.SaveChanges();
     }
  }

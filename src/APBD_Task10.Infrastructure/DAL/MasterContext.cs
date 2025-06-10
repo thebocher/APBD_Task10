@@ -13,21 +13,21 @@ public partial class MasterContext : DbContext
     {
     }
 
-    public virtual DbSet<Device> Devices { get; set; }
+    public virtual DbSet<Device> Device { get; set; }
 
-    public virtual DbSet<DeviceEmployee> DeviceEmployees { get; set; }
+    public virtual DbSet<DeviceEmployee> DeviceEmployee { get; set; }
 
-    public virtual DbSet<DeviceType> DeviceTypes { get; set; }
+    public virtual DbSet<DeviceType> DeviceType { get; set; }
 
-    public virtual DbSet<Employee> Employees { get; set; }
+    public virtual DbSet<Employee> Employee { get; set; }
 
-    public virtual DbSet<Person> People { get; set; }
+    public virtual DbSet<Person> Person { get; set; }
 
-    public virtual DbSet<Position> Positions { get; set; }
+    public virtual DbSet<Position> Position { get; set; }
     
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Role> Role { get; set; }
 
-    public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<Account> Account { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

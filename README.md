@@ -11,6 +11,7 @@ src/APBD_Task10.API/appsettings.json template
   "ConnectionStrings": {
     "DatabaseConnection": "--your-connection-string--"
   },
+  "AdditionalPropertiesValidationConfigPath": "--path--",
   "Jwt": {
     "Issuer": "http://localhost:5300",
     "Audience": "http://localhost:5300",

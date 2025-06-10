@@ -19,37 +19,49 @@ public class AuthController : ControllerBase
     private readonly MasterContext _context;
     private readonly PasswordHasher<Account> _passwordHasher = new PasswordHasher<Account>();
     private readonly ITokenService _tokenService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(MasterContext context, ITokenService tokenService)
+    public AuthController(
+        MasterContext context, 
+        ITokenService tokenService,
+        ILogger<AuthController> logger
+        )
     {
         _context = context;
         _tokenService = tokenService;
+        _logger = logger;
     }
     
     [HttpPost]
-    public IResult login(LoginDto dto)
+    public IResult Login(LoginDto dto)
     {
-        var account = _context.Accounts
-            .Include(a => a.Role)
-            .FirstOrDefault(a => a.Username == dto.Username);
-
-        if (account == null)
+        try
         {
-            return Results.BadRequest();
+            var account = _context.Account
+                .Include(a => a.Role)
+                .FirstOrDefault(a => a.Username == dto.Login);
+
+            if (account == null)
+            {
+                return Results.BadRequest();
+            }
+
+            var result = _passwordHasher.VerifyHashedPassword(account, account.Password, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return Results.Unauthorized();
+            }
+
+            var token = new
+            {
+                AccessToken = _tokenService.GenerateToken(dto.Login, account.Role.Name),
+            };
+            _logger.LogInformation($"login: {dto.Login}, role: {account.Role.Name}");
+            return Results.Ok(token);
         }
-        
-        var result = _passwordHasher.VerifyHashedPassword(account, account.Password, dto.Password); 
-        if (result == PasswordVerificationResult.Failed)
+        catch (Exception ex)
         {
-            return Results.Unauthorized();
+            return Results.BadRequest(ex.Message);
         }
-
-        var token = new
-        {
-            AccessToken = _tokenService.GenerateToken(dto.Username, account.Role.Name),
-        };
-        
-        return Results.Ok(token);
-
     }
 }

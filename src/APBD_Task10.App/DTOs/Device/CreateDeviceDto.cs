@@ -1,18 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace APBD_Task10.App.DTOs;
+namespace APBD_Task10.App.DTOs.Device;
 
 public class CreateDeviceDto
 {
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Required]
-    public required string DeviceTypeName { get; set; }
+    public required int TypeId { get; set; }
     
     [Required]
     public required bool IsEnabled { get; set; }
     
     [Required]
-    public required string AdditionalProperties { get; set; }
+    public required object AdditionalProperties { get; set; }
 }

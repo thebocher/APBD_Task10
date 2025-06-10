@@ -30,29 +30,47 @@ namespace APBD_Task10.API.Controllers
         // GET: api/AccountController1
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<GetAccountListItemDto>>> GetAccounts()
         {
-            return await _context.Accounts.ToListAsync();
+            return await _context.Account.Select(a => new GetAccountListItemDto
+            {
+                Id = a.Id,
+                Username = a.Username,
+            }).ToListAsync();
         }
 
         // GET: api/AccountController1/5
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        public async Task<ActionResult<GetAccountDto>> GetAccount(int id)
         {
-            var account = await _context.Accounts.FindAsync(id);
-            
-            if (account == null)
+            try
             {
-                return NotFound();
+                var account = await _context.Account
+                    .Include(a => a.Role)
+                    .FirstOrDefaultAsync(a => a.Id == id);
+
+                if (account == null)
+                {
+                    return NotFound();
+                }
+
+                if (!User.IsInRole("Admin"))
+                    if (!User.Claims.Any(c => c.Type == JwtRegisteredClaimNames.Name
+                                              && c.Value == account.Username))
+                        return Forbid();
+
+                return new GetAccountDto()
+                {
+                    Username = account.Username,
+                    Role = account.Role.Name
+                };
             }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            } 
 
-            if (!User.IsInRole("Admin"))
-                if (!User.Claims.Any(c => c.Type == JwtRegisteredClaimNames.Name
-                                          && c.Value == account.Username))
-                    return Forbid();
-
-            return account;
         }
 
         // PUT: api/AccountController1/5
@@ -61,37 +79,47 @@ namespace APBD_Task10.API.Controllers
         [Authorize]
         public async Task<IActionResult> PutAccount(int id, UpdateAccountDto dto)
         {
-            if (!User.IsInRole("Admin"))
-                if (!User.Claims.Any(c => c.Type == JwtRegisteredClaimNames.Name
-                                          && c.Value == dto.Username))
-                    return Forbid();
-
-            var account = new Account
-            {
-                Id = id,
-                Username = dto.Username,
-                Password = dto.Password,
-            };
-            
-            _context.Entry(account).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(id))
+                var account = _context.Account.FirstOrDefault(a => a.Id == id);
+                if (account == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                if (!User.IsInRole("Admin"))
+                {
+
+                    if (!User.Claims.Any(c => c.Type == JwtRegisteredClaimNames.Name
+                                              && c.Value == account.Username))
+                        return Forbid();
+                }
+
+                account.Username = dto.Username;
+                account.Password = _passwordHasher.HashPassword(account, dto.Password);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AccountExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // POST: api/AccountController1
@@ -100,30 +128,34 @@ namespace APBD_Task10.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<GetAccountDto>> PostAccount(RegisterRequestDto dto)
         {
-            
-            var account = new Account()
+            try
             {
-                Username = dto.Username,
-                RoleId = dto.RoleId,
-                EmployeeId = dto.EmployeeId
-            };
-            
-            string passwrod = _passwordHasher.HashPassword(account, dto.Password);
-            account.Password = passwrod;
-            
-            _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
+                var account = new Account()
+                {
+                    Username = dto.Username,
+                    RoleId = dto.RoleId,
+                    EmployeeId = dto.EmployeeId
+                };
 
-            var resultDto = new GetAccountDto
+                string passwrod = _passwordHasher.HashPassword(account, dto.Password);
+                account.Password = passwrod;
+
+                _context.Account.Add(account);
+
+                await _context.SaveChangesAsync();
+
+                var resultDto = new GetAccountDto
+                {
+                    Username = account.Username,
+                    Role = account.Role.Name
+                };
+
+                return CreatedAtAction("GetAccount", new { id = account.Id }, resultDto);
+            }
+            catch (Exception e)
             {
-                Id = account.Id,
-                Username = account.Username,
-                RoleId = account.RoleId,
-                EmployeeId = account.EmployeeId,
-                Password = account.Password
-            };
-
-            return CreatedAtAction("GetAccount", new { id = account.Id }, resultDto);
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/AccountController1/5
@@ -131,37 +163,28 @@ namespace APBD_Task10.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAccount(int id)
         {
-            var account = await _context.Accounts.FindAsync(id);
-            if (account == null)
+            try
             {
-                return NotFound();
+                var account = await _context.Account.FindAsync(id);
+                if (account == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Account.Remove(account);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         private bool AccountExists(int id)
         {
-            return _context.Accounts.Any(e => e.Id == id);
+            return _context.Account.Any(e => e.Id == id);
         }
-
-        // [HttpPost("create-admin")]
-        // public IResult createAdmin()
-        // {
-        //     var person = new Person()
-        //     {
-        //
-        //     };
-        //     var account = new Account()
-        //     {
-        //         Username = "admin",
-        //
-        //     };
-        //     
-        //     
-        // }
     }
 }

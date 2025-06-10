@@ -7,4 +7,5 @@ public interface IEmployeeService
 {
     public List<GetEmployeeListItemDto> GetEmployees();
     public GetEmployeeDto? GetEmployee(int id);
+    public GetEmployeeDto CreateEmployee(CreateEmployeeDto dto);
 }

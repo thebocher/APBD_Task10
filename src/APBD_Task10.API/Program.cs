@@ -1,7 +1,11 @@
 using System.Text;
+using APBD_Task10.API.Helpers.Middleware;
+using APBD_Task10.API.Helpers.Services;
 using APBD_Task10.App;
 using APBD_Task10.App.Helpers.Options;
 using APBD_Task10.App.Services;
+using APBD_Task10.App.Services.Position;
+using APBD_Task10.App.Services.Role;
 using APBD_Task10.Infrastructure;
 using APBD_Task10.Infrastructure.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,7 +38,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromMinutes(2),
+        ClockSkew = TimeSpan.FromMinutes(120),
         ValidIssuer = jwtConfigData["Issuer"],
         ValidAudience = jwtConfigData["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigData["Key"]))
@@ -59,7 +63,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = false,
-        ClockSkew = TimeSpan.FromMinutes(2),
+        ClockSkew = TimeSpan.FromMinutes(120),
         ValidIssuer = jwtConfigData["Issuer"],
         ValidAudience = jwtConfigData["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigData["Key"]))
@@ -67,7 +71,15 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddSingleton<ValidationConfigService>( 
+    (s) => new ValidationConfigService(
+        builder.Configuration.GetValue<string>("AdditionalPropertiesValidationConfigPath")
+        ));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -89,5 +101,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<AdditionalPropertiesValidationMiddleware>();
 
 app.Run();

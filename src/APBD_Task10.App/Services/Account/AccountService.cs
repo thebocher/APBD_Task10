@@ -22,7 +22,7 @@ public class AccountService(MasterContext context) : IAccountService
         
         account.Password = _passwordHasher.HashPassword(account, dto.Password);
         
-        _context.Accounts.Add(account);
+        _context.Account.Add(account);
         _context.SaveChanges();
     }
 }

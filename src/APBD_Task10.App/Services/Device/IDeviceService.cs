@@ -1,4 +1,5 @@
 using APBD_Task10.App.DTOs;
+using APBD_Task10.App.DTOs.Device;
 
 namespace APBD_Task10.App.Services;
 
